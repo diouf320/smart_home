@@ -8,6 +8,7 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
+#include "lcd_screen_i2c.h"
 
 #define LED_YELLOW_NODE DT_ALIAS(led_yellow)
 #define LCD_SCREEN_NODE DT_ALIAS(lcd_screen)
@@ -19,7 +20,7 @@ int main(void)
 {
 	printf("Hello World! %s\n", CONFIG_BOARD_TARGET);
 	gpio_pin_configure_dt(&led_yellow_gpio, GPIO_OUTPUT_HIGH);
-	//init_lcd(&lcd_screen);
+	init_lcd(&lcd_screen);
 
 	return 0;
 }
