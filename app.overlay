@@ -13,9 +13,16 @@
         label = "XHT11";
     };
 
-    
-};
+    button1: button1 {
+        gpios = <&gpio0 16 GPIO_ACTIVE_LOW>;
+        label = "Button 1";
+    };
 
+    button2: button2 {
+        gpios = <&gpio0 27 GPIO_ACTIVE_LOW>;
+        label = "Button 2";
+    };
+};
     zephyr,user {
         io-channels =
         <&adc0 6>;
@@ -25,6 +32,8 @@
         led-yellow = &ledyellow;
         lcd-screen = &lcdscreen;
         dht11 = &dht11;
+        button-1 = &button1;
+        button-2 = &button2;
     };
 };
 

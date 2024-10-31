@@ -34,6 +34,55 @@ static const struct adc_dt_spec adc_channels[] = {
     DT_FOREACH_PROP_ELEM(DT_PATH(zephyr_user), io_channels, DT_SPEC_AND_COMMA)
 };
 
+#define BUTTON_1_NODE DT_ALIAS(button_1)
+#define BUTTON_2_NODE DT_ALIAS(button_2)
+
+static const struct gpio_dt_spec button1 = GPIO_DT_SPEC_GET_OR(BUTTON_1_NODE, gpios, {0});
+static const struct gpio_dt_spec button2 = GPIO_DT_SPEC_GET_OR(BUTTON_2_NODE, gpios, {0});
+
+static struct gpio_callback button1_cb_data;
+static struct gpio_callback button2_cb_data;
+
+volatile bool button1_pressed = false;
+volatile bool button2_pressed = false;
+
+void button1_pressed_callback(const struct device *dev, struct gpio_callback * cb, uint32_t pins) 
+{
+    button1_pressed = true;
+}
+
+void button2_pressed_callback(const struct device *dev, struct gpio_callback * cb, uint32_t pins) 
+{
+    button2_pressed = true;
+}
+
+void configure_buttons(void) 
+{
+    gpio_pin_configure_dt(&button1, GPIO_INPUT);
+    gpio_pin_configure_dt(&button2, GPIO_INPUT);
+
+    gpio_pin_interrupt_configure_dt(&button1, GPIO_INT_EDGE_TO_ACTIVE);
+    gpio_pin_interrupt_configure_dt(&button2, GPIO_INT_EDGE_TO_ACTIVE);
+
+    gpio_init_callback(&button1_cb_data, button1_pressed_callback, BIT(button1.pin));
+    gpio_add_callback(button1.port, &button1_cb_data);
+
+    gpio_init_callback(&button2_cb_data, button2_pressed_callback, BIT(button2.pin));
+    gpio_add_callback(button2.port, &button2_cb_data);
+}
+
+void display_message_on_lcd(void)
+{
+    if (button1_pressed) {
+        button1_pressed = false;
+        printk("Button 1 pressed\n");
+    }
+    if (button2_pressed) {
+        button2_pressed = false;
+        printk("Button 2 pressed\n");
+    }
+}
+
 int main(void)
 {
     int ret;
@@ -66,6 +115,9 @@ int main(void)
             return;
         }
     }
+
+    printk("Initialisation du système\n");
+    configure_buttons();
 
     while (1) {
         
@@ -101,21 +153,8 @@ int main(void)
             }
         }
 
-        k_sleep(K_SECONDS(10));
+        display_message_on_lcd();
+        k_sleep(K_MSEC(500));
     }
-}
 
-//	while(1){
-//		r  = sensor_sample_fetch(dht11);
-//		if (r < 0){
-//			printf("Erreur");
-//			continue;
-//		}
-//
-//		sensor_channel_get(dht11, SENSOR_CHAN_AMBIENT_TEMP, &temp);
-//		sensor_channel_get(dht11, SENSOR_CHAN_HUMIDITY, &humidity);
-//
-//		printf("Température: %.d.%06d °C, Humidité: %d.%06d %%\n", temp.val1, temp.val2, humidity.val1, humidity.val2);
-//
-//		k_sleep(K_SECONDS(10));
-//	}
+}
