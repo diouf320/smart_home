@@ -23,6 +23,15 @@
         label = "Button 2";
     };
 };
+
+    gpio_buzzer {
+        compatible = "gpio-leds";
+        buzzer: buzzer {
+            gpios = <&gpio0 25 GPIO_ACTIVE_HIGH>;
+            label = "Buzzer";
+        };
+    };
+    
     zephyr,user {
         io-channels =
         <&adc0 6>;
@@ -34,6 +43,7 @@
         dht11 = &dht11;
         button-1 = &button1;
         button-2 = &button2;
+        buzzer = &buzzer;
     };
 };
 

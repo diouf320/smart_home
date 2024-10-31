@@ -12,6 +12,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/pwm.h>
 #include <zephyr/sys/printk.h>
 #include "lcd_screen_i2c.h"
 
@@ -76,10 +77,12 @@ void display_message_on_lcd(void)
     if (button1_pressed) {
         button1_pressed = false;
         printk("Button 1 pressed\n");
+        write_lcd(&lcd_screen, "Button 1 pressed", LCD_LINE_1);
     }
     if (button2_pressed) {
         button2_pressed = false;
         printk("Button 2 pressed\n");
+        write_lcd(&lcd_screen, "Button 2 pressed", LCD_LINE_1);
     }
 }
 
